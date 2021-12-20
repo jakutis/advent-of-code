@@ -61,11 +61,9 @@ const countLightPixels = image => {
   return light
 }
 
-const solve = ({lines, log, timesToEnhance}) => {
+const solve = ({lines, timesToEnhance}) => {
   let {algorithm, image} = read(lines, timesToEnhance)
 
-  // since algorithm[0]=1 and algorithm[511]=0, two enhancements will result in the infinite area being 0
-  // therefore 1 pixels are countable - no need to count the infinite space
   for (let i = 0; i < timesToEnhance; i++) {
     image = enhance(image, algorithm)
   }
