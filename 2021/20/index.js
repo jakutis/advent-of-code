@@ -1,72 +1,76 @@
-const solve = ({lines, log, timesToEnhance}) => {
-  const algorithm = []
-  let image = []
-  const margin = []
-  for (let i = 0; i < timesToEnhance; i++) {
-    margin.push('0')
-    margin.push('0')
-    margin.push('0')
+const enhance = (image, algorithm) => {
+  const newImage = []
+  const marginPixel = image[0][0] === '0' ? '1' : '0'
+  const marginRow = marginPixel.repeat(image[0].length)
+  newImage.push(marginRow)
+  const [nx, ny] = [image[0].length, image.length]
+  for (let y = 1; y < (ny - 1); y++) {
+    const row = [marginPixel]
+    for (let x = 1; x < (nx - 1); x++) {
+      const n = [
+        image[y - 1][x - 1], image[y - 1][x], image[y - 1][x + 1],
+        image[y][x - 1], image[y][x], image[y][x + 1],
+        image[y + 1][x - 1], image[y + 1][x], image[y + 1][x + 1],
+      ]
+      row.push(algorithm[parseInt(n.join(''), 2)])
+    }
+    row.push(marginPixel)
+    newImage.push(row)
   }
-  let state = 'algorithm'
+  newImage.push(marginRow)
+  return newImage
+}
+
+const read = (lines, timesToEnhance) => {
+  let algorithm = ''
+  let image = []
+  let margin = ''
+  for (let i = 0; i < timesToEnhance; i++) {
+    margin += '000'
+  }
+  let addBits = bits => algorithm += bits
   lines.forEach(line => {
     if (line === '') {
-      state = 'input'
+      addBits = bits => image.push(margin + bits + margin)
     } else {
-      const bits = line.split('').map(c => c === '#' ? '1' : '0')
-      if (state === 'algorithm') {
-        algorithm.push.apply(algorithm, bits)
-      } else {
-        image.push(margin.concat(bits).concat(margin))
-      }
+      addBits(line.split('').map(c => c === '#' ? '1' : '0').join(''))
     }
   })
+  const darkRow = '0'.repeat(image[0].length)
   for (let i = 0; i < timesToEnhance; i++) {
-    image.unshift('0'.repeat(image[0].length).split(''))
-    image.unshift('0'.repeat(image[0].length).split(''))
-    image.unshift('0'.repeat(image[0].length).split(''))
+    image.unshift(darkRow)
+    image.unshift(darkRow)
+    image.unshift(darkRow)
+    image.push(darkRow)
+    image.push(darkRow)
+    image.push(darkRow)
   }
-  for (let i = 0; i < timesToEnhance; i++) {
-    image.push('0'.repeat(image[0].length).split(''))
-    image.push('0'.repeat(image[0].length).split(''))
-    image.push('0'.repeat(image[0].length).split(''))
-  }
+  return {algorithm, image}
+}
+
+const countLightPixels = image => {
+  let light = 0
   const [nx, ny] = [image[0].length, image.length]
-  const nAt = (x, y) => {
-    const n = [
-      image[y - 1][x - 1], image[y - 1][x], image[y - 1][x + 1],
-      image[y][x - 1], image[y][x], image[y][x + 1],
-      image[y + 1][x - 1], image[y + 1][x], image[y + 1][x + 1],
-    ]
-    return parseInt(n.join(''), 2)
-  }
-  const enhance = () => {
-    const newImage = []
-    const marginPixel = image[0][0] === '0' ? '1' : '0'
-    newImage.push(marginPixel.repeat(image[0].length).split(''))
-    for (let y = 1; y < (ny - 1); y++) {
-      const row = [marginPixel]
-      for (let x = 1; x < (nx - 1); x++) {
-        row.push(algorithm[nAt(x, y)])
+  for (let y = 0; y < ny; y++) {
+    for (let x = 0; x < nx; x++) {
+      if (image[y][x] === '1') {
+        light++
       }
-      row.push(marginPixel)
-      newImage.push(row)
     }
-    newImage.push(marginPixel.repeat(image[0].length).split(''))
-    image = newImage
   }
+  return light
+}
+
+const solve = ({lines, log, timesToEnhance}) => {
+  let {algorithm, image} = read(lines, timesToEnhance)
+
   // since algorithm[0]=1 and algorithm[511]=0, two enhancements will result in the infinite area being 0
   // therefore 1 pixels are countable - no need to count the infinite space
   for (let i = 0; i < timesToEnhance; i++) {
-    enhance()
+    image = enhance(image, algorithm)
   }
-  let light = 0
-  image.forEach(row => row.forEach(p => {
-    if (p === '1') {
-      light++
-    }
-  }))
-  return light
 
+  return countLightPixels(image)
 }
 
 exports.part1 = (lines, log) => solve({lines,log,timesToEnhance: 2})
