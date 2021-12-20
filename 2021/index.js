@@ -1,5 +1,6 @@
 const { readdirSync, readFileSync } = require('fs')
-const read = filename => readFileSync(filename).toString().split('\n').map(l => l.trim()).filter(Boolean)
+const read = filename => readFileSync(filename).toString().trim().split('\n').map(l => l.trim())
+// TODO insert .filter(Boolean) into every source code from day 1 to day 19
 const log = line => console.log(typeof line === 'string' ? line : JSON.stringify(line, null, 2))
 
 const cwd = process.cwd()
