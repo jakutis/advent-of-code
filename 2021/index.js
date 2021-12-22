@@ -6,10 +6,14 @@ const log = line => console.log(typeof line === 'string' ? line : JSON.stringify
 const cwd = process.cwd()
 const { part1, part2 } = require(cwd)
 const internalTest = (tests) => {
-  tests.forEach(({calculate, input, output}) => {
+  tests = tests.filter(t => !t.skip)
+  const only = tests.filter(t => t.only)
+  ;(only.length ? only : tests).forEach(({id, calculate, input, output}) => {
     const actualOutput = calculate(input)
-    if (JSON.stringify(actualOutput) !== JSON.stringify(output)) {
-      throw new Error('INTERNAL TESTS FAILED')
+    const actual = JSON.stringify(actualOutput)
+    const expected = JSON.stringify(output)
+    if (actual !== expected) {
+      throw new Error(['INTERNAL TEST (id=' + id + ') FAILED:', 'actual=' + actual, 'expected='+expected, 'input='+JSON.stringify(input)].join('\n'))
     }
   })
   log(tests.length + ' INTERNAL TESTS WERE RUN, ALL PASSED')
