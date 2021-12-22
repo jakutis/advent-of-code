@@ -449,6 +449,7 @@ exports.part2 = (lines, log, test) => {
     }
     throw 1
   }
+  test = () => {}
   test([
     {
       id: 'outside',
