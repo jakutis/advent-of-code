@@ -56,9 +56,6 @@ const hallwayToPlace = (h, room, place) => {
       hallwayToAboveRoom = 5
     }
   }
-  if (hallwayToAboveRoom === undefined) {
-    throw 'unreachable'
-  }
   return aboveRoomToPlace(place) + hallwayToAboveRoom
 }
 const getMovable = (p) => {
@@ -141,7 +138,6 @@ const set = (p, {room, place, h}, amp) => {
     p.r[room][place] = amp
     return
   }
-  throw 'unreachable 2'
 }
 const isHallwayToRoomBlocked = (p, h, room) => {
   if (h < 2) {
@@ -174,7 +170,6 @@ const isHallwayToRoomBlocked = (p, h, room) => {
     }
     return isRoomToRoomBlocked(p, 2, room)
   }
-  throw 1
 }
 const isRoomToRoomBlocked = (p, a, b) => {
   if (a === b) {
@@ -200,15 +195,6 @@ const distance = (p, amp, {h: hA, room: roomA, place: placeA}, {h: hB, room: roo
   if (roomA === roomB || hA === hB) {
     return -1
   }
-/*
-#############
-#..0.1.2.3..#
-###B#A#B#C###
-#D#C#B#A#
-#D#B#A#C#
-#D#A#D#C#
-#########
-*/
   if (hA !== undefined) {
     if (roomB !== undefined) {
       if (isHallwayToRoomBlocked(p, hA, roomB)) {
@@ -237,7 +223,6 @@ const distance = (p, amp, {h: hA, room: roomA, place: placeA}, {h: hB, room: roo
       return toAboveSourceRoom + toAboveTargetRoom + toRoomPlace
     }
   }
-  throw 'unreachable 3'
 };
 const copy = p => ({r: p.r.map(p => p.slice()), h: p.h.slice()})
 const key = p => '[' + p.h + '-' + p.r + ']'
